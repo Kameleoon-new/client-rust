@@ -2,6 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.9.0
+## 0.9.0 - 2026-04-24
 ### Features
 * Initial release of the `kameleoon-client` crate
