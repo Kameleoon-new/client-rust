@@ -4,17 +4,17 @@ All notable changes to this project will be documented in this file.
 ## 0.9.4 - 2026-06-16
 ### Breaking Changes
 * Replaced `String` return types with `Arc<str>` across several SDK Core APIs and data structures to improve performance and reduce unnecessary allocations.
-Affected methods:
-  - [`get_variation()`][get_variation]
-  - [`get_variations()`][get_variations]
-  - [`is_feature_active()`][is_feature_active]
-  - [`get_datafile()`][get_datafile]
-Affected types:
-  - [`DataFile`][datafile]
-  - [`Variation`][variation]
-  - [`Variable`][variable]
-  - [`Rule`][rule]
-This change may require updates to consumer code that relies on `String`-specific APIs or type signatures.
+  - Affected methods:
+    - [`get_variation()`][get_variation]
+    - [`get_variations()`][get_variations]
+    - [`is_feature_active()`][is_feature_active]
+    - [`get_datafile()`][get_datafile]
+  - Affected types:
+    - [`DataFile`][datafile]
+    - [`Variation`][variation]
+    - [`Variable`][variable]
+    - [`Rule`][rule]
+  - This change may require updates to consumer code that relies on `String`-specific APIs or type signatures.
 
 [variation]: https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/rust-sdk/#variation
 [variable]: https://developers.kameleoon.com/feature-management-and-experimentation/web-sdks/rust-sdk/#variable
