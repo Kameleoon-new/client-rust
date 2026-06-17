@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## 0.9.5 - 2026-06-17
+### Patch Changes
+* Dependency versions are now pinned to exact versions (`=`) instead of using compatible version ranges (`^`). Affected libraries:
+  - [kameleoon-core][kameleoon-core]
+
+[kameleoon-core]: https://crates.io/crates/kameleoon-core
+
 ## 0.9.4 - 2026-06-16
 ### Breaking Changes
 * Replaced `String` return types with `Arc<str>` across several SDK Core APIs and data structures to improve performance and reduce unnecessary allocations.
