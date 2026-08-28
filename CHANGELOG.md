@@ -1,6 +1,24 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## 0.9.6 - 2026-08-28
+### Features
+* [`initialize`][initialize] now fail fast when the initial configuration fetch has failed: instead of waiting out the timeout, they immediately return the actual fetch error, such as a network or HTTP failure. A later successful fetch (for example, on the next polling cycle) still makes the client ready, and subsequent calls return successfully. The behavior of [`is_ready`][is_ready] is unchanged: it returns `true` only after a configuration has been successfully fetched, and never reverts afterwards.
+* Added support for SDK event handlers through the new [`set_event_handler`][set_event_handler] API:
+  - `EventType::DataFileUpdate` notifies when the SDK data file (configuration) is updated with [polling](https://docs.kameleoon.com/developer-docs/feature-experimentation/technical-reference/technical-considerations#polling-default) or [streaming](https://docs.kameleoon.com/developer-docs/feature-experimentation/technical-reference/technical-considerations#streaming-premium-option) modes.
+  - `EventType::HttpRequest` notifies when SDK HTTP requests complete successfully or fail.
+  - HTTP request events include the request type, HTTP status or failure details, and request duration.
+  - Passing `None` — for example `EventHandler::HttpRequest(None)` — clears the handler for the selected event type.
+* All event types are available from the new `kameleoon_client::events` module.
+* The [`on_datafile_update`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#on_datafile_update) method has been deprecated in favor of `set_event_handler` with the `EventType::DataFileUpdate` event type.
+
+### Bug fixes
+* Targeting conditions of an unknown type now evaluate to `false` instead of `true`. Previously an unsupported condition matched every visitor; now it matches none.
+
+[initialize]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#initialize
+[is_ready]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#is_ready
+[set_event_handler]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#set_event_handler
+
 ## 0.9.5 - 2026-06-19
 ### Patch Changes
 * Dependency versions are now pinned to exact versions (`=`) instead of using compatible version ranges (`^`). Affected libraries:
