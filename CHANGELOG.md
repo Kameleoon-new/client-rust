@@ -1,6 +1,24 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## 0.9.8 - 2026-10-09
+### Features
+* Added `ErrorCode::InvalidArgument`, reserved for arguments rejected before they reach the core. `ErrorCode` is now `#[non_exhaustive]`: a `match` over it needs a wildcard arm, which also keeps future codes from breaking callers.
+* Added `KameleoonError::into_message()`, which consumes the error and returns its message without copying it. `KameleoonError` now implements `std::error::Error`, `PartialEq` and `Eq`.
+* [`set_legal_consent`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#set_legal_consent) takes `Option<&mut dyn CookieAccessor>` instead of `Option<&mut impl CookieAccessor>`, so `None` no longer needs a type annotation. Call sites passing `Some(&mut accessor)` are unaffected; an `Option<&mut MyAccessor>` variable must be coerced (`.map(|c| c as &mut dyn CookieAccessor)`).
+* Re-exported the builder error types (`KameleoonClientConfigBuilderError`, `RemoteVisitorDataFilterBuilderError`, `GeolocationBuilderError`) and `RemoteVisitorDataFilterBuilder`, and documented the public API (`#![warn(missing_docs)]`).
+* Removed `KameleoonLogger::get_log_level()`; the log level is set through `set_log_level` and was never meant to be read back.
+
+### Bug fixes
+* [`KameleoonClientFactory::create_*`][create] now returns an `ErrorCode::Initialization` error when the site code is empty or when the client ID or client secret is empty, consistent with every other client-creation failure. The error message names the exact cause. The `SiteCodeIsEmpty` and `ConfigCredentialsInvalid` error codes previously used for these cases are no longer returned; they remain declared and are marked deprecated, so code naming them keeps compiling (with a deprecation warning).
+* Creating a client with a configuration file path now fails with an `Initialization` error if the file cannot be read or parsed, instead of silently using the default configuration.
+* [`get_datafile`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#get_datafile) (and the deprecated `get_feature_keys`) now return an `Initialization` error until the client is ready, instead of an empty data file.
+* Dropping the last `KameleoonClient` for a site code (after `forget`) no longer blocks the dropping thread while the SDK runtime shuts down, and is safe from inside an SDK event handler or callback.
+* The deprecated [`on_datafile_update`](https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#on_datafile_update) is now a shorthand for `set_event_handler` with `EventHandler::DataFileUpdate`. Its callback is thereby also protected against panics like every other event handler.
+* Lowered the log level of the message emitted when the streaming server closes the real-time (SSE) connection from `ERROR` to `INFO`. The streaming server recycles connections periodically and the SDK reconnects automatically, so this is expected behavior. Connection failures (error responses, network errors) are still logged as `ERROR`.
+
+[create]: https://docs.kameleoon.com/developer-docs/sdks/web-sdks/rust-sdk#create
+
 ## 0.9.7 - 2026-09-11
 ### Bug fixes
 * Reduced the load on the Data API during its outages. After a failed tracking request, the SDK sends only one visitor's data per tracking request until a request succeeds, instead of retrying with a full-size (up to 2.5 MB) request on every tracking interval. Once the Data API is reachable again, the accumulated visitor data is sent in full-size requests as usual.
